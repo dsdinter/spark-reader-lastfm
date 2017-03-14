@@ -10,3 +10,11 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.2.9",
   "org.scalaz" %% "scalaz-effect" % "7.2.9"
 )
+
+coverageEnabled := true
+
+coverageMinimum := 65
+
+coverageFailOnMinimum := false
+
+coverageHighlighting := true
