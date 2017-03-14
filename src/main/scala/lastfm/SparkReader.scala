@@ -1,28 +1,15 @@
 package lastfm
 
-import org.apache.spark.{SparkConf, SparkContext}
-
-import scalaz.Reader
+import Resolver._
 
 /**
   * Created by davidsabater on 07/03/2017.
   */
-object SparkReader {
-  type Work[A] = Reader[SparkContext, A]
 
-  def runWithSpark[T](work: Work[T]): T = {
-    val processorCount = Runtime.getRuntime.availableProcessors()
-    val sparkConf: SparkConf = new SparkConf()
-      .setAppName("reader")
-      .setMaster(s"local[$processorCount]")
+object SparkReader extends Context {
 
-    val sc = new SparkContext(sparkConf)
-
-    try {
-      work.run(sc)
-    } finally {
-      sc.stop
-    }
+  def main(args: Array[String]): Unit = {
+    runWithSpark(loadDataResolve(args(0)))
   }
 
 }
