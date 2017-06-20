@@ -33,17 +33,22 @@ object Resolver extends IOComponent with Serializable{
       .toMap
   }
 
-  def resolvePartC(rdd: RDD[ListenedSongs], MaxMinutes: Int): Map[String, Session] = {
+  def resolvePartC(rdd: RDD[ListenedSongs], MaxMinutes: Int): Map[String, List[Session]] = {
     rdd.map(event => (event.userID, (event.song, event.timestamp)))
       .groupByKey()
       .mapValues(_.toList.sortBy(_._2)
-        .foldLeft(List[(Song, Long)]()){
-          case (List(), track) => List(track)
-          case (list, track) if Math.abs(track._2 - list.head._2) <= MaxMinutes.minutes.toMillis =>  list :+ track
-          case (list, track) => list
+        .foldLeft(List[(Session)]()){
+          case (List(), track) => List(Session(track._2, track._2, 0, List(track)))
+          case (list, track) if Math.abs(track._2 - list.last.startTime) <= MaxMinutes.minutes.toMillis => {
+            // We add track to existing session
+            list.init :+ Session(list.last.startTime, track._2, track._2 - list.last.startTime, list.last.songs :+ track)
+          }
+          case (list, track) if Math.abs(track._2 - list.last.startTime) > MaxMinutes.minutes.toMillis =>  {
+            // We start a new session
+            list :+ Session(track._2, track._2, track._2 - list.last.startTime, List(track))
+          }
       })
-      .top(10)(Ordering.by(_._2.size))
-      .map(event => (event._1, Session(event._2.head._2, event._2.last._2, event._2)))
+      .top(10)(Ordering.by(_._2.foreach(session => session.duration)))
       .toMap
   }
 }
