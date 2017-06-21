@@ -62,17 +62,17 @@ class TestResolver extends FlatSpec with Matchers with Context {
       ))
       val result = resolvePartC(listenedSongs, 10)
       result should be(Map(
-        "User1" -> List(Session(1229827261000L, 1229827663000L, 1229827663000L - 1229827261000L, List(
+        "User1" -> List(Session(1229827261000L, 1229827663000L, List(
           (Song("Track1", "ArtistA"), 1229827261000L),
           (Song("Track5", "ArtistB"), 1229827461000L),
           (Song("Track2", "ArtistA"), 1229827663000L))
         )),
         "User2" -> List(
-          Session(1229827265000L, 1229827467000L, 1229827467000L - 1229827265000L, List(
+          Session(1229827265000L, 1229827467000L, List(
             (Song("Track3", "ArtistA"), 1229827265000L),
             (Song("Track4", "ArtistA"), 1229827467000L))
           ),
-          Session(1229828167000L, 1229828169000L, 1229828169000L - 1229828167000L, List(
+          Session(1229828167000L, 1229828169000L, List(
             (Song("Track4", "ArtistC"), 1229828167000L),
             (Song("Track6", "ArtistC"), 1229828169000L))
           )

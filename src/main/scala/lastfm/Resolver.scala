@@ -38,17 +38,17 @@ object Resolver extends IOComponent with Serializable{
       .groupByKey()
       .mapValues(_.toList.sortBy(_._2)
         .foldLeft(List[(Session)]()){
-          case (List(), track) => List(Session(track._2, track._2, 0, List(track)))
+          case (List(), track) => List(Session(track._2, track._2, List(track)))
           case (list, track) if Math.abs(track._2 - list.last.startTime) <= MaxMinutes.minutes.toMillis => {
             // We add track to existing session
-            list.init :+ Session(list.last.startTime, track._2, track._2 - list.last.startTime, list.last.songs :+ track)
+            list.init :+ Session(list.last.startTime, track._2, list.last.songs :+ track)
           }
           case (list, track) if Math.abs(track._2 - list.last.startTime) > MaxMinutes.minutes.toMillis =>  {
             // We start a new session
-            list :+ Session(track._2, track._2, track._2 - list.last.startTime, List(track))
+            list :+ Session(track._2, track._2, List(track))
           }
       })
-      .top(10)(Ordering.by(_._2.foreach(session => session.duration)))
+      .top(10)(Ordering.by(_._2.foreach(session => session.stopTime - session.startTime)))
       .toMap
   }
 }
